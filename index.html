@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="AI-powered travel planner for students - Create personalized, budget-friendly itineraries with interactive maps" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <title>AI Travel Planner - Budget-Friendly Student Travel</title>
+</head>
+
+<body>
+  <!-- Theme Toggle -->
+  <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+    <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+    <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+    </svg>
+  </button>
+
+  <!-- Hero Section -->
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-massive-title">EXPLORE</div>
+
+    <div class="hero-content">
+      <h1 class="hero-title-luxury">
+        AI TRAVEL PLANNER
+        <span class="hero-subtitle-luxury">Student Edition</span>
+      </h1>
+      <p class="hero-description-luxury">
+        Experience the world without breaking the bank. Personalized itineraries, smart budgeting, and authentic local
+        experiences.
+      </p>
+      <button class="cta-button-luxury"
+        onclick="document.getElementById('planner').scrollIntoView({behavior: 'smooth'})">
+        START PLANNING
+      </button>
+    </div>
+
+    <!-- Floating Cards -->
+    <div class="hero-floating-cards">
+      <div class="floating-card">
+        <span class="fc-icon">✨</span>
+        <span class="fc-text">AI Curated</span>
+      </div>
+      <div class="floating-card">
+        <span class="fc-icon">💰</span>
+        <span class="fc-text">Budget Smart</span>
+      </div>
+      <div class="floating-card">
+        <span class="fc-icon">🌍</span>
+        <span class="fc-text">Global</span>
+      </div>
+      <div class="floating-card">
+        <span class="fc-icon">🎒</span>
+        <span class="fc-text">Student First</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Planner Section -->
+  <section id="planner" class="planner-section reveal-on-scroll">
+    <div class="container">
+      <div class="planner-grid">
+        <!-- Left Column: Form -->
+        <div class="planner-form-container">
+          <div class="glass-card">
+            <h2 class="section-title">Plan Your Trip</h2>
+
+            <form id="trip-form" class="trip-form">
+              <!-- Destination -->
+              <div class="form-group">
+                <label for="destination">Destination</label>
+                <input type="text" id="destination" name="destination" class="form-input"
+                  placeholder="e.g., Paris, Tokyo, New York" required />
+              </div>
+
+              <!-- Duration -->
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="duration">Days</label>
+                  <input type="number" id="duration" name="duration" class="form-input" placeholder="3" min="1" max="30"
+                    required />
+                </div>
+
+                <!-- Budget -->
+                <div class="form-group">
+                  <label for="budget">Budget (₹)</label>
+                  <input type="number" id="budget" name="budget" class="form-input" placeholder="50000" min="5000"
+                    step="1000" required />
+                </div>
+              </div>
+
+              <!-- Interests -->
+              <div class="form-group">
+                <label>Interests</label>
+                <div class="interests-grid">
+                  <label class="interest-card">
+                    <input type="checkbox" name="interests" value="cultural" class="interest-input" />
+                    <div class="interest-content">
+                      <span class="interest-icon">🏛️</span>
+                      <span class="interest-label">Cultural</span>
+                    </div>
+                  </label>
+                  <label class="interest-card">
+                    <input type="checkbox" name="interests" value="adventure" class="interest-input" />
+                    <div class="interest-content">
+                      <span class="interest-icon">🧗</span>
+                      <span class="interest-label">Adventure</span>
+                    </div>
+                  </label>
+                  <label class="interest-card">
+                    <input type="checkbox" name="interests" value="food" class="interest-input" />
+                    <div class="interest-content">
+                      <span class="interest-icon">🍕</span>
+                      <span class="interest-label">Food</span>
+                    </div>
+                  </label>
+                  <label class="interest-card">
+                    <input type="checkbox" name="interests" value="nightlife" class="interest-input" />
+                    <div class="interest-content">
+                      <span class="interest-icon">🎉</span>
+                      <span class="interest-label">Nightlife</span>
+                    </div>
+                  </label>
+                  <label class="interest-card">
+                    <input type="checkbox" name="interests" value="nature" class="interest-input" />
+                    <div class="interest-content">
+                      <span class="interest-icon">🌳</span>
+                      <span class="interest-label">Nature</span>
+                    </div>
+                  </label>
+                  <label class="interest-card">
+                    <input type="checkbox" name="interests" value="shopping" class="interest-input" />
+                    <div class="interest-content">
+                      <span class="interest-icon">🛍️</span>
+                      <span class="interest-label">Shopping</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Accommodation Preference -->
+              <div class="form-group">
+                <label for="accommodation">Accommodation</label>
+                <select id="accommodation" name="accommodation" class="form-input">
+                  <option value="hostel">Hostel</option>
+                  <option value="budget-hotel">Budget Hotel</option>
+                  <option value="airbnb">Airbnb</option>
+                  <option value="any">Any</option>
+                </select>
+              </div>
+
+              <!-- Submit Button -->
+              <button type="submit" class="submit-button" id="generate-btn">
+                <span class="button-text">Generate Itinerary</span>
+                <span class="button-loader" style="display: none;">
+                  <svg class="spinner" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" opacity="0.25" />
+                    <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="4" fill="none"
+                      stroke-linecap="round" />
+                  </svg>
+                  Generating...
+                </span>
+              </button>
+            </form>
+
+            <!-- API Key Notice -->
+            <div id="api-notice" class="api-notice" style="display: none;">
+              <p>⚠️ Please set your Google Gemini API key to use AI features.</p>
+              <p style="font-size: 0.875rem; margin-top: 0.5rem;">
+                Add <code>VITE_GEMINI_API_KEY=your_key_here</code> to a <code>.env</code> file in the project root.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Map -->
+        <div class="map-container">
+          <div class="glass-card map-card">
+            <div id="map" class="map"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Section -->
+      <div id="results-section" class="results-section" style="display: none;">
+        <div class="glass-card results-card">
+          <div class="results-header">
+            <h2 class="section-title">Your Itinerary</h2>
+            <div id="budget-summary" class="budget-summary"></div>
+          </div>
+          <div id="itinerary-content" class="itinerary-content"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>Built with ❤️ for students • Powered by Google Gemini AI & Leaflet.js</p>
+  </footer>
+
+  <script type="module" src="/main.js"></script>
+</body>
+
+</html>
