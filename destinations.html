@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Browse 12 student-friendly travel destinations curated with budget ranges, highlights, and best seasons." />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <title>Destinations — StudentTravelAI</title>
+</head>
+
+<body>
+
+  <main class="destinations-page">
+
+    <div class="dest-page-header reveal-on-scroll">
+      <p class="section-eyebrow">Curated for Students</p>
+      <h1 class="section-heading">Explore Destinations</h1>
+      <p class="section-subheading">12 hand-picked destinations across Asia, Europe, and the Americas — with honest budget ranges, best seasons, and what to expect.</p>
+    </div>
+
+    <!-- Filters -->
+    <div class="dest-filters reveal-on-scroll">
+      <span class="filter-label">Budget:</span>
+      <div class="filter-group" id="budget-filters">
+        <button class="filter-btn active" data-budget="all">All</button>
+        <button class="filter-btn" data-budget="10000">Under ₹10k</button>
+        <button class="filter-btn" data-budget="25000">₹10k–25k</button>
+        <button class="filter-btn" data-budget="50000">₹25k–50k</button>
+      </div>
+
+      <div class="filter-divider"></div>
+
+      <span class="filter-label">Continent:</span>
+      <div class="filter-group" id="continent-filters">
+        <button class="filter-btn active" data-continent="all">All</button>
+        <button class="filter-btn" data-continent="Asia">Asia</button>
+        <button class="filter-btn" data-continent="Europe">Europe</button>
+        <button class="filter-btn" data-continent="Americas">Americas</button>
+        <button class="filter-btn" data-continent="Africa">Africa</button>
+      </div>
+
+      <div class="filter-divider"></div>
+
+      <span class="filter-label">Interest:</span>
+      <div class="filter-group" id="interest-filters">
+        <button class="filter-btn active" data-interest="all">All</button>
+        <button class="filter-btn" data-interest="cultural">Cultural</button>
+        <button class="filter-btn" data-interest="adventure">Adventure</button>
+        <button class="filter-btn" data-interest="food">Food</button>
+        <button class="filter-btn" data-interest="nature">Nature</button>
+        <button class="filter-btn" data-interest="nightlife">Nightlife</button>
+      </div>
+    </div>
+
+    <!-- Grid -->
+    <div class="dest-grid" id="dest-grid"></div>
+    <div id="dest-no-results" class="dest-no-results" style="display:none">
+      No destinations match those filters. Try broadening your selection.
+    </div>
+
+  </main>
+
+  <script type="module" src="/pages/destinations.js"></script>
+</body>
+
+</html>

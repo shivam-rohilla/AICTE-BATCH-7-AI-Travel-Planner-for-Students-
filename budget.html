@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Student travel budget tools — live currency converter, daily budget calculator, and group trip cost splitter." />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <title>Budget Tool — StudentTravelAI</title>
+</head>
+
+<body>
+
+  <main class="budget-page">
+
+    <div class="budget-page-header reveal-on-scroll">
+      <p class="section-eyebrow">Money Matters</p>
+      <h1 class="section-heading">Budget Tools</h1>
+      <p class="section-subheading">Live currency converter, daily spend calculator, and group trip cost splitter — built for students travelling on a tight budget.</p>
+    </div>
+
+    <div class="budget-tools-grid reveal-on-scroll">
+
+      <!-- Currency Converter -->
+      <div class="budget-tool-card">
+        <div class="budget-tool-title">💱 Currency Converter</div>
+        <div class="budget-tool-subtitle">Live exchange rates via ExchangeRate-API (free tier)</div>
+
+        <div class="currency-row">
+          <div class="currency-field">
+            <label for="from-amount">Amount</label>
+            <input type="number" id="from-amount" class="currency-input" value="1000" min="0" />
+          </div>
+          <button id="swap-currencies" class="currency-swap" title="Swap currencies">⇄</button>
+          <div class="currency-field">
+            <label for="to-amount">Converted</label>
+            <input type="number" id="to-amount" class="currency-input" readonly />
+          </div>
+        </div>
+
+        <div style="display:flex;gap:0.75rem">
+          <div class="currency-field" style="flex:1">
+            <label>From</label>
+            <select id="from-currency" class="currency-select">
+              <option value="INR" selected>🇮🇳 INR — Indian Rupee</option>
+              <option value="USD">🇺🇸 USD — US Dollar</option>
+              <option value="EUR">🇪🇺 EUR — Euro</option>
+              <option value="GBP">🇬🇧 GBP — British Pound</option>
+              <option value="JPY">🇯🇵 JPY — Japanese Yen</option>
+              <option value="THB">🇹🇭 THB — Thai Baht</option>
+              <option value="IDR">🇮🇩 IDR — Indonesian Rupiah</option>
+              <option value="CZK">🇨🇿 CZK — Czech Koruna</option>
+              <option value="NPR">🇳🇵 NPR — Nepalese Rupee</option>
+              <option value="ZAR">🇿🇦 ZAR — South African Rand</option>
+              <option value="MXN">🇲🇽 MXN — Mexican Peso</option>
+            </select>
+          </div>
+          <div class="currency-field" style="flex:1">
+            <label>To</label>
+            <select id="to-currency" class="currency-select">
+              <option value="INR">🇮🇳 INR — Indian Rupee</option>
+              <option value="USD" selected>🇺🇸 USD — US Dollar</option>
+              <option value="EUR">🇪🇺 EUR — Euro</option>
+              <option value="GBP">🇬🇧 GBP — British Pound</option>
+              <option value="JPY">🇯🇵 JPY — Japanese Yen</option>
+              <option value="THB">🇹🇭 THB — Thai Baht</option>
+              <option value="IDR">🇮🇩 IDR — Indonesian Rupiah</option>
+              <option value="CZK">🇨🇿 CZK — Czech Koruna</option>
+              <option value="NPR">🇳🇵 NPR — Nepalese Rupee</option>
+              <option value="ZAR">🇿🇦 ZAR — South African Rand</option>
+              <option value="MXN">🇲🇽 MXN — Mexican Peso</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="currency-result" id="currency-result">Enter an amount above to convert.</div>
+        <div class="rate-note" id="rate-note"></div>
+      </div>
+
+      <!-- Daily Budget Calculator -->
+      <div class="budget-tool-card">
+        <div class="budget-tool-title">📊 Daily Budget Calculator</div>
+        <div class="budget-tool-subtitle">Drag the sliders to plan your daily spend</div>
+
+        <div class="slider-row">
+          <div class="slider-label-row">
+            <span class="slider-label">🏨 Accommodation</span>
+            <span class="slider-value" id="val-accommodation">₹1,500</span>
+          </div>
+          <input type="range" class="budget-slider" id="sl-accommodation" min="0" max="10000" step="100" value="1500" />
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-label-row">
+            <span class="slider-label">🍽️ Food & Drinks</span>
+            <span class="slider-value" id="val-food">₹800</span>
+          </div>
+          <input type="range" class="budget-slider" id="sl-food" min="0" max="5000" step="50" value="800" />
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-label-row">
+            <span class="slider-label">🚌 Transport</span>
+            <span class="slider-value" id="val-transport">₹400</span>
+          </div>
+          <input type="range" class="budget-slider" id="sl-transport" min="0" max="3000" step="50" value="400" />
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-label-row">
+            <span class="slider-label">🎯 Activities</span>
+            <span class="slider-value" id="val-activities">₹500</span>
+          </div>
+          <input type="range" class="budget-slider" id="sl-activities" min="0" max="5000" step="50" value="500" />
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-label-row">
+            <span class="slider-label">🛍️ Shopping / Misc</span>
+            <span class="slider-value" id="val-misc">₹200</span>
+          </div>
+          <input type="range" class="budget-slider" id="sl-misc" min="0" max="5000" step="50" value="200" />
+        </div>
+
+        <div class="budget-total-box">
+          <span class="budget-total-label">Daily Total</span>
+          <span class="budget-total-value" id="budget-daily-total">₹3,400</span>
+        </div>
+        <div class="budget-breakdown" id="trip-budget-breakdown"></div>
+      </div>
+
+      <!-- Group Split Calculator -->
+      <div class="budget-tool-card">
+        <div class="budget-tool-title">👥 Group Trip Splitter</div>
+        <div class="budget-tool-subtitle">Split costs fairly across your travel group</div>
+
+        <div class="form-row" style="margin-bottom:1rem">
+          <div class="form-group">
+            <label for="total-cost" style="font-size:0.8rem;color:var(--text-secondary);display:block;margin-bottom:0.4rem">Total Trip Cost (₹)</label>
+            <input type="number" id="total-cost" class="currency-input" value="50000" min="0" />
+          </div>
+          <div class="form-group">
+            <label for="group-size" style="font-size:0.8rem;color:var(--text-secondary);display:block;margin-bottom:0.4rem">Group Size</label>
+            <input type="number" id="group-size" class="currency-input" value="4" min="1" max="20" />
+          </div>
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-label-row">
+            <span class="slider-label">Trip duration (days)</span>
+            <span class="slider-value" id="val-trip-days">7 days</span>
+          </div>
+          <input type="range" class="budget-slider" id="sl-trip-days" min="1" max="30" step="1" value="7" />
+        </div>
+
+        <div class="split-result" id="split-result"></div>
+      </div>
+
+      <!-- Student Money Tips -->
+      <div class="budget-tool-card">
+        <div class="budget-tool-title">💡 Student Money Hacks</div>
+        <div class="budget-tool-subtitle">Tried-and-tested tips from student travellers</div>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:0.75rem">
+          <li style="display:flex;gap:0.75rem;align-items:flex-start;font-size:0.875rem;color:var(--text-secondary)">
+            <span style="font-size:1.1rem;flex-shrink:0">🏦</span>
+            <span><strong style="color:var(--text-primary)">Use Wise or Revolut</strong> — the best exchange rates abroad, zero hidden fees, and instant conversion between currencies.</span>
+          </li>
+          <li style="display:flex;gap:0.75rem;align-items:flex-start;font-size:0.875rem;color:var(--text-secondary)">
+            <span style="font-size:1.1rem;flex-shrink:0">🎓</span>
+            <span><strong style="color:var(--text-primary)">Always carry your student ID</strong> — most global museums, monuments, and even transport give 20–50% discounts.</span>
+          </li>
+          <li style="display:flex;gap:0.75rem;align-items:flex-start;font-size:0.875rem;color:var(--text-secondary)">
+            <span style="font-size:1.1rem;flex-shrink:0">🕐</span>
+            <span><strong style="color:var(--text-primary)">Travel off-peak</strong> — flights booked 6–8 weeks ahead on Tue/Wed are cheapest. Avoid school holiday weeks.</span>
+          </li>
+          <li style="display:flex;gap:0.75rem;align-items:flex-start;font-size:0.875rem;color:var(--text-secondary)">
+            <span style="font-size:1.1rem;flex-shrink:0">🍜</span>
+            <span><strong style="color:var(--text-primary)">Eat 2 streets from tourist sites</strong> — same food, 30–50% cheaper. Look for the queues of locals, not tourists.</span>
+          </li>
+          <li style="display:flex;gap:0.75rem;align-items:flex-start;font-size:0.875rem;color:var(--text-secondary)">
+            <span style="font-size:1.1rem;flex-shrink:0">🏨</span>
+            <span><strong style="color:var(--text-primary)">Hostels aren't just dorms</strong> — they have social kitchens, free tours, and connect you with fellow travellers. Often 70% cheaper than hotels.</span>
+          </li>
+          <li style="display:flex;gap:0.75rem;align-items:flex-start;font-size:0.875rem;color:var(--text-secondary)">
+            <span style="font-size:1.1rem;flex-shrink:0">📲</span>
+            <span><strong style="color:var(--text-primary)">Download maps offline</strong> — Maps.me and Google Maps offline work without data. Essential for budget SIM cards abroad.</span>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </main>
+
+  <script type="module" src="/pages/budget.js"></script>
+</body>
+
+</html>

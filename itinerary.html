@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Your AI-generated travel itinerary — day-by-day plan, map, weather, budget chart, and packing list." />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <title>Your Itinerary — StudentTravelAI</title>
+</head>
+
+<body>
+
+  <main class="itinerary-page">
+
+    <!-- Header -->
+    <div id="itin-header" class="itinerary-page-header">
+      <div>
+        <p class="section-eyebrow">AI Generated Itinerary</p>
+        <h1 id="itin-title" class="section-heading" style="font-size:clamp(1.5rem,3vw,2.5rem)">Loading…</h1>
+        <div class="itinerary-meta" id="itin-meta"></div>
+      </div>
+      <div class="itinerary-actions">
+        <button class="btn-secondary" onclick="window.print()">🖨️ Print / PDF</button>
+        <button class="btn-secondary" id="share-btn">🔗 Share</button>
+        <button class="btn-secondary" id="export-btn">💾 Export</button>
+        <a href="/planner.html" class="btn-secondary">✏️ Edit Trip</a>
+      </div>
+    </div>
+
+    <!-- Empty state (shown when no trip data) -->
+    <div id="empty-state" class="empty-state" style="display:none">
+      <div class="empty-state-icon">✈️</div>
+      <h2>No Itinerary Yet</h2>
+      <p>You haven't generated a trip yet. Go to the planner and create one!</p>
+      <a href="/planner.html" class="btn-primary">Plan a Trip</a>
+    </div>
+
+    <!-- Main content (hidden until loaded) -->
+    <div id="itin-content" style="display:none">
+
+      <!-- Tabs -->
+      <nav class="result-tabs" id="result-tabs">
+        <button class="tab-btn active" data-tab="itinerary">📅 Itinerary</button>
+        <button class="tab-btn" data-tab="budget">💰 Budget</button>
+        <button class="tab-btn" data-tab="weather">🌤️ Weather</button>
+        <button class="tab-btn" data-tab="packing">🎒 Packing</button>
+        <button class="tab-btn" data-tab="tips">💡 Tips</button>
+      </nav>
+
+      <!-- Tab panels + map grid -->
+      <div class="itin-grid">
+
+        <!-- Left: tab content -->
+        <div class="itin-main">
+          <div id="tab-itinerary" class="tab-panel">
+            <div id="itinerary-content" class="itinerary-content"></div>
+          </div>
+          <div id="tab-budget" class="tab-panel" style="display:none">
+            <div class="glass-card"><div id="budget-chart-container"></div></div>
+          </div>
+          <div id="tab-weather" class="tab-panel" style="display:none">
+            <div class="glass-card"><div id="weather-panel" class="weather-loading">
+              <div class="loading-ring small"></div>
+              <p>Fetching live weather…</p>
+            </div></div>
+          </div>
+          <div id="tab-packing" class="tab-panel" style="display:none">
+            <div class="glass-card"><div id="packing-content"></div></div>
+          </div>
+          <div id="tab-tips" class="tab-panel" style="display:none">
+            <div class="glass-card"><div id="tips-content"></div></div>
+          </div>
+        </div>
+
+        <!-- Right: map + budget summary -->
+        <div class="itin-side">
+          <div class="glass-card map-card" style="position:sticky;top:80px">
+            <div id="map" class="map"></div>
+            <div id="budget-summary" class="budget-summary" style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--glass-border)"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script type="module" src="/pages/itinerary.js"></script>
+</body>
+
+</html>

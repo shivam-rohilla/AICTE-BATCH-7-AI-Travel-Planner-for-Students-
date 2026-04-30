@@ -6,6 +6,26 @@
   command = "npm run dev"
   targetPort = 5173
 
+[[redirects]]
+  from = "/planner"
+  to   = "/planner.html"
+  status = 200
+
+[[redirects]]
+  from = "/itinerary"
+  to   = "/itinerary.html"
+  status = 200
+
+[[redirects]]
+  from = "/destinations"
+  to   = "/destinations.html"
+  status = 200
+
+[[redirects]]
+  from = "/budget"
+  to   = "/budget.html"
+  status = 200
+
 [[headers]]
   for = "/*"
   [headers.values]

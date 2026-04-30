@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Plan your student trip — enter your destination, budget and interests to generate an AI itinerary." />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <title>Plan Your Trip — StudentTravelAI</title>
+</head>
+
+<body>
+
+  <main class="planner-page">
+    <div class="planner-page-header reveal-on-scroll">
+      <p class="section-eyebrow">AI Itinerary Generator</p>
+      <h1 class="section-heading">Plan Your Trip</h1>
+      <p class="section-subheading">Fill in the details below and the AI will build a complete day-by-day itinerary with real costs, tips, and a live map.</p>
+    </div>
+
+    <div class="glass-card reveal-on-scroll">
+
+      <!-- Budget presets -->
+      <div style="margin-bottom:1.5rem">
+        <label style="font-size:0.8rem;color:var(--text-secondary);display:block;margin-bottom:0.6rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em">Quick Budget Presets</label>
+        <div class="budget-presets">
+          <button class="budget-preset-btn" data-amount="10000">Under ₹10k</button>
+          <button class="budget-preset-btn" data-amount="25000">₹25k</button>
+          <button class="budget-preset-btn" data-amount="50000">₹50k</button>
+          <button class="budget-preset-btn" data-amount="100000">₹1 Lakh</button>
+        </div>
+      </div>
+
+      <form id="trip-form" class="trip-form">
+
+        <!-- Destination -->
+        <div class="form-group">
+          <label for="destination">Destination</label>
+          <input type="text" id="destination" name="destination" class="form-input"
+            placeholder="e.g., Goa, Bangkok, Prague" required />
+        </div>
+
+        <!-- Duration + Budget -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="duration">Duration (days)</label>
+            <input type="number" id="duration" name="duration" class="form-input" placeholder="7" min="1" max="30" required />
+          </div>
+          <div class="form-group">
+            <label for="budget">Total Budget (₹)</label>
+            <input type="number" id="budget" name="budget" class="form-input" placeholder="50000" min="5000" step="1000" required />
+          </div>
+        </div>
+
+        <!-- Interests -->
+        <div class="form-group">
+          <label>Interests</label>
+          <div class="interests-grid">
+            <label class="interest-card">
+              <input type="checkbox" name="interests" value="cultural" class="interest-input" />
+              <div class="interest-content"><span class="interest-icon">🏛️</span><span class="interest-label">Cultural</span></div>
+            </label>
+            <label class="interest-card">
+              <input type="checkbox" name="interests" value="adventure" class="interest-input" />
+              <div class="interest-content"><span class="interest-icon">🧗</span><span class="interest-label">Adventure</span></div>
+            </label>
+            <label class="interest-card">
+              <input type="checkbox" name="interests" value="food" class="interest-input" />
+              <div class="interest-content"><span class="interest-icon">🍕</span><span class="interest-label">Food</span></div>
+            </label>
+            <label class="interest-card">
+              <input type="checkbox" name="interests" value="nightlife" class="interest-input" />
+              <div class="interest-content"><span class="interest-icon">🎉</span><span class="interest-label">Nightlife</span></div>
+            </label>
+            <label class="interest-card">
+              <input type="checkbox" name="interests" value="nature" class="interest-input" />
+              <div class="interest-content"><span class="interest-icon">🌳</span><span class="interest-label">Nature</span></div>
+            </label>
+            <label class="interest-card">
+              <input type="checkbox" name="interests" value="shopping" class="interest-input" />
+              <div class="interest-content"><span class="interest-icon">🛍️</span><span class="interest-label">Shopping</span></div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Accommodation -->
+        <div class="form-group">
+          <label for="accommodation">Accommodation Preference</label>
+          <select id="accommodation" name="accommodation" class="form-input">
+            <option value="hostel">Hostel (Cheapest — great for meeting fellow travellers)</option>
+            <option value="budget-hotel">Budget Hotel (Private room, basic amenities)</option>
+            <option value="airbnb">Airbnb / Guesthouse (Local experience)</option>
+            <option value="any">Any (AI picks the best option for your budget)</option>
+          </select>
+        </div>
+
+        <button class="feeling-lucky-btn" type="button" id="feeling-lucky">
+          🎲 I'm Feeling Lucky — Surprise me with a destination!
+        </button>
+
+        <!-- Submit -->
+        <button type="submit" class="submit-button" id="generate-btn" style="margin-top:1.5rem">
+          <span class="button-text">✈️ Generate My Itinerary</span>
+          <span class="button-loader" style="display:none">
+            <svg class="spinner" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" opacity="0.25" />
+              <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round" />
+            </svg>
+            Generating Itinerary…
+          </span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Trip History -->
+    <div class="glass-card reveal-on-scroll" style="margin-top:2rem">
+      <h3 style="font-size:1rem;font-weight:600;margin-bottom:1rem">📋 Recent Trips</h3>
+      <div id="history-list"></div>
+    </div>
+  </main>
+
+  <!-- History Panel (side panel on larger screens) -->
+  <button id="history-toggle" class="history-toggle-btn">📋 Trip History</button>
+  <aside id="history-panel" class="history-panel" aria-label="Trip history">
+    <div class="history-header">
+      <span class="history-panel-title">Saved Trips</span>
+      <button id="history-close" class="history-close-btn" aria-label="Close history">×</button>
+    </div>
+    <div id="history-panel-list"></div>
+  </aside>
+
+  <script type="module" src="/pages/planner.js"></script>
+</body>
+
+</html>
