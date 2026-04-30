@@ -1025,7 +1025,7 @@ body {
 .tab-btn.active { color: var(--text-accent); border-bottom-color: var(--text-accent); }
 
 .tab-panels { margin-bottom: var(--spacing-2xl); }
-.tab-panel  { animation: fadeInUp 0.3s ease-out; }
+.tab-panel  { }
 .tab-heading {
   font-family: var(--font-heading);
   font-size: 1.4rem;

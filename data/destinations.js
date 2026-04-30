@@ -22,7 +22,7 @@ export const DESTINATIONS = [
     country: 'India',
     continent: 'Asia',
     tagline: 'Snow peaks, treks & mountain magic',
-    image: 'https://images.unsplash.com/photo-1585516482738-d081bde9a1a6?w=600&q=80',
+    image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80',
     budgetPerDay: 1500,
     budgetTotal: 10500,
     tags: ['adventure', 'nature', 'snow'],

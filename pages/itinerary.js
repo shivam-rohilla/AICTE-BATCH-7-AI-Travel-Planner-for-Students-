@@ -75,27 +75,46 @@ function renderPage(it) {
   // Tips
   document.getElementById('tips-content').innerHTML = buildTipsPanel(it)
 
-  // Map
-  initMap(it.days)
+  // Map — defer so browser paints display:block before Leaflet measures the container
+  setTimeout(() => initMap(it.days), 80)
 
   // Weather (non-blocking)
   fetchWeather(it.destination, it.duration).then(w => renderWeather(w, it.duration))
 
   // Demo banner
   if (it.isDemo) showDemoBanner()
+
+  // Tabs — wire up AFTER content is rendered so panels are populated
+  initTabs()
 }
 
 // ── Tabs ───────────────────────────────────────────────────────────────────────
 
-document.getElementById('result-tabs')?.addEventListener('click', e => {
-  const btn = e.target.closest('.tab-btn')
-  if (!btn) return
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'))
-  btn.classList.add('active')
-  const tab = btn.dataset.tab
-  document.querySelectorAll('.tab-panel').forEach(p => p.style.display = 'none')
-  document.getElementById(`tab-${tab}`).style.display = 'block'
-})
+const TAB_IDS = ['itinerary', 'budget', 'weather', 'packing', 'tips']
+
+function switchTab(name) {
+  TAB_IDS.forEach(id => {
+    const panel = document.getElementById(`tab-${id}`)
+    if (panel) panel.style.display = id === name ? 'block' : 'none'
+  })
+  // itinerary panel uses flex layout
+  if (name === 'itinerary') {
+    document.getElementById('tab-itinerary').style.display = 'flex'
+  }
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.tab === name)
+  })
+}
+
+function initTabs() {
+  // Ensure only itinerary panel visible on load
+  switchTab('itinerary')
+
+  document.getElementById('result-tabs')?.addEventListener('click', e => {
+    const btn = e.target.closest('.tab-btn')
+    if (btn) switchTab(btn.dataset.tab)
+  })
+}
 
 // ── Map ────────────────────────────────────────────────────────────────────────
 
@@ -108,6 +127,8 @@ function initMap(days) {
     maxZoom: 19,
     attribution: '© <a href="https://carto.com/">CARTO</a> · © <a href="https://openstreetmap.org">OSM</a>',
   }).addTo(map)
+  // Force Leaflet to recalculate container size after paint
+  setTimeout(() => map.invalidateSize(), 200)
 
   const markers = L.layerGroup().addTo(map)
   const bounds = []
