@@ -1,5 +1,6 @@
 import { initShared, showToast } from '../shared.js'
 import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
 
 initShared()
 
@@ -75,8 +76,8 @@ function renderPage(it) {
   // Tips
   document.getElementById('tips-content').innerHTML = buildTipsPanel(it)
 
-  // Map — wait two rAF cycles so browser paints display:block before Leaflet measures
-  requestAnimationFrame(() => requestAnimationFrame(() => initMap(it.days)))
+  // Map — wait for layout to settle after display:block before Leaflet measures
+  setTimeout(() => initMap(it.days), 200)
 
   // Weather (non-blocking)
   fetchWeather(it.destination, it.duration).then(w => renderWeather(w, it.duration))
@@ -94,9 +95,8 @@ const TAB_IDS = ['itinerary', 'budget', 'weather', 'packing', 'tips']
 
 function switchTab(name) {
   TAB_IDS.forEach(id => {
-    const panel = document.getElementById(`tab-${id}`)
+    const panel = document.getElementById('tab-' + id)
     if (!panel) return
-    // tab-itinerary wrapper is always display:block; itinerary-content inside gets flex from CSS
     panel.style.display = id === name ? 'block' : 'none'
   })
   document.querySelectorAll('.tab-btn').forEach(b => {
@@ -105,13 +105,13 @@ function switchTab(name) {
 }
 
 function initTabs() {
-  // Ensure only itinerary panel visible on load
-  switchTab('itinerary')
-
-  document.getElementById('result-tabs')?.addEventListener('click', e => {
-    const btn = e.target.closest('.tab-btn')
-    if (btn) switchTab(btn.dataset.tab)
+  // Direct listener on every button — no delegation
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      switchTab(this.dataset.tab)
+    })
   })
+  switchTab('itinerary')
 }
 
 // ── Map ────────────────────────────────────────────────────────────────────────
@@ -125,8 +125,10 @@ function initMap(days) {
     maxZoom: 19,
     attribution: '© <a href="https://carto.com/">CARTO</a> · © <a href="https://openstreetmap.org">OSM</a>',
   }).addTo(map)
-  // Force Leaflet to recalculate container size after sticky layout settles
-  setTimeout(() => map.invalidateSize(), 400)
+  // Invalidate multiple times to handle sticky/grid layout reflow
+  setTimeout(() => map.invalidateSize(), 100)
+  setTimeout(() => map.invalidateSize(), 500)
+  setTimeout(() => map.invalidateSize(), 1200)
 
   const markers = L.layerGroup().addTo(map)
   const bounds = []
