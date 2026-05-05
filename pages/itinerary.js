@@ -75,8 +75,8 @@ function renderPage(it) {
   // Tips
   document.getElementById('tips-content').innerHTML = buildTipsPanel(it)
 
-  // Map — defer so browser paints display:block before Leaflet measures the container
-  setTimeout(() => initMap(it.days), 80)
+  // Map — wait two rAF cycles so browser paints display:block before Leaflet measures
+  requestAnimationFrame(() => requestAnimationFrame(() => initMap(it.days)))
 
   // Weather (non-blocking)
   fetchWeather(it.destination, it.duration).then(w => renderWeather(w, it.duration))
@@ -95,12 +95,10 @@ const TAB_IDS = ['itinerary', 'budget', 'weather', 'packing', 'tips']
 function switchTab(name) {
   TAB_IDS.forEach(id => {
     const panel = document.getElementById(`tab-${id}`)
-    if (panel) panel.style.display = id === name ? 'block' : 'none'
+    if (!panel) return
+    // tab-itinerary wrapper is always display:block; itinerary-content inside gets flex from CSS
+    panel.style.display = id === name ? 'block' : 'none'
   })
-  // itinerary panel uses flex layout
-  if (name === 'itinerary') {
-    document.getElementById('tab-itinerary').style.display = 'flex'
-  }
   document.querySelectorAll('.tab-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.tab === name)
   })
@@ -127,8 +125,8 @@ function initMap(days) {
     maxZoom: 19,
     attribution: '© <a href="https://carto.com/">CARTO</a> · © <a href="https://openstreetmap.org">OSM</a>',
   }).addTo(map)
-  // Force Leaflet to recalculate container size after paint
-  setTimeout(() => map.invalidateSize(), 200)
+  // Force Leaflet to recalculate container size after sticky layout settles
+  setTimeout(() => map.invalidateSize(), 400)
 
   const markers = L.layerGroup().addTo(map)
   const bounds = []
