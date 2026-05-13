@@ -30,7 +30,6 @@ try {
 
 if (!trip) {
   document.getElementById('itin-header').style.display = 'none'
-  document.getElementById('itin-content').style.display = 'none'
   document.getElementById('empty-state').style.display = 'block'
 } else {
   renderPage(trip)
@@ -40,6 +39,11 @@ if (!trip) {
 
 function renderPage(it) {
   document.title = `${it.destination} Itinerary — StudentTravelAI`
+
+  // Show container first so layout is computed before Leaflet measures #map
+  document.getElementById('itin-content').style.display = 'block'
+  // Force synchronous layout reflow — after this, #map has real pixel dimensions
+  void document.getElementById('map').getBoundingClientRect()
 
   document.getElementById('itin-title').textContent = `${it.destination} — ${it.duration}-Day Itinerary`
   document.getElementById('itin-meta').innerHTML = [
@@ -85,12 +89,8 @@ function renderPage(it) {
   // Tabs — CSS class approach, no inline styles
   initTabs()
 
-  // Map — container has real dimensions (visibility:hidden still renders layout)
-  // Init synchronously so Leaflet measures correctly, THEN reveal content
+  // Map — display:block + getBoundingClientRect() above guarantees real dimensions
   initMap(it.days)
-
-  // Reveal everything at once after map + tabs are ready
-  document.getElementById('itin-content').style.visibility = 'visible'
 }
 
 // ── Tabs ───────────────────────────────────────────────────────────────────────
