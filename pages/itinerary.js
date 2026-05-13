@@ -30,6 +30,7 @@ try {
 
 if (!trip) {
   document.getElementById('itin-header').style.display = 'none'
+  document.getElementById('itin-content').style.display = 'none'
   document.getElementById('empty-state').style.display = 'block'
 } else {
   renderPage(trip)
@@ -39,7 +40,6 @@ if (!trip) {
 
 function renderPage(it) {
   document.title = `${it.destination} Itinerary — StudentTravelAI`
-  document.getElementById('itin-content').style.display = 'block'
 
   document.getElementById('itin-title').textContent = `${it.destination} — ${it.duration}-Day Itinerary`
   document.getElementById('itin-meta').innerHTML = [
@@ -76,17 +76,21 @@ function renderPage(it) {
   // Tips
   document.getElementById('tips-content').innerHTML = buildTipsPanel(it)
 
-  // Map — wait for layout to settle after display:block before Leaflet measures
-  setTimeout(() => initMap(it.days), 200)
-
   // Weather (non-blocking)
   fetchWeather(it.destination, it.duration).then(w => renderWeather(w, it.duration))
 
   // Demo banner
   if (it.isDemo) showDemoBanner()
 
-  // Tabs — wire up AFTER content is rendered so panels are populated
+  // Tabs — CSS class approach, no inline styles
   initTabs()
+
+  // Map — container has real dimensions (visibility:hidden still renders layout)
+  // Init synchronously so Leaflet measures correctly, THEN reveal content
+  initMap(it.days)
+
+  // Reveal everything at once after map + tabs are ready
+  document.getElementById('itin-content').style.visibility = 'visible'
 }
 
 // ── Tabs ───────────────────────────────────────────────────────────────────────
@@ -96,8 +100,7 @@ const TAB_IDS = ['itinerary', 'budget', 'weather', 'packing', 'tips']
 function switchTab(name) {
   TAB_IDS.forEach(id => {
     const panel = document.getElementById('tab-' + id)
-    if (!panel) return
-    panel.style.display = id === name ? 'block' : 'none'
+    if (panel) panel.classList.toggle('tab-active', id === name)
   })
   document.querySelectorAll('.tab-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.tab === name)
@@ -125,10 +128,8 @@ function initMap(days) {
     maxZoom: 19,
     attribution: '© <a href="https://carto.com/">CARTO</a> · © <a href="https://openstreetmap.org">OSM</a>',
   }).addTo(map)
-  // Invalidate multiple times to handle sticky/grid layout reflow
-  setTimeout(() => map.invalidateSize(), 100)
-  setTimeout(() => map.invalidateSize(), 500)
-  setTimeout(() => map.invalidateSize(), 1200)
+  // Invalidate after content becomes visible (visibility flip happens after this returns)
+  setTimeout(() => map.invalidateSize(), 50)
 
   const markers = L.layerGroup().addTo(map)
   const bounds = []

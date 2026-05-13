@@ -39,8 +39,8 @@
       <a href="/planner.html" class="btn-primary">Plan a Trip</a>
     </div>
 
-    <!-- Main content (hidden until loaded) -->
-    <div id="itin-content" style="display:none">
+    <!-- Main content (visibility:hidden keeps layout/dimensions for Leaflet, JS flips to visible) -->
+    <div id="itin-content" style="visibility:hidden">
 
       <!-- Tabs -->
       <nav class="result-tabs" id="result-tabs">
@@ -59,19 +59,19 @@
           <div id="tab-itinerary" class="tab-panel">
             <div id="itinerary-content" class="itinerary-content"></div>
           </div>
-          <div id="tab-budget" class="tab-panel" style="display:none">
+          <div id="tab-budget" class="tab-panel">
             <div class="glass-card"><div id="budget-chart-container"></div></div>
           </div>
-          <div id="tab-weather" class="tab-panel" style="display:none">
+          <div id="tab-weather" class="tab-panel">
             <div class="glass-card"><div id="weather-panel" class="weather-loading">
               <div class="loading-ring small"></div>
               <p>Fetching live weather…</p>
             </div></div>
           </div>
-          <div id="tab-packing" class="tab-panel" style="display:none">
+          <div id="tab-packing" class="tab-panel">
             <div class="glass-card"><div id="packing-content"></div></div>
           </div>
-          <div id="tab-tips" class="tab-panel" style="display:none">
+          <div id="tab-tips" class="tab-panel">
             <div class="glass-card"><div id="tips-content"></div></div>
           </div>
         </div>

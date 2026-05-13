@@ -1025,7 +1025,8 @@ body {
 .tab-btn.active { color: var(--text-accent); border-bottom-color: var(--text-accent); }
 
 .tab-panels { margin-bottom: var(--spacing-2xl); }
-.tab-panel  { }
+.tab-panel  { display: none; }
+.tab-panel.tab-active { display: block; }
 .tab-heading {
   font-family: var(--font-heading);
   font-size: 1.4rem;
