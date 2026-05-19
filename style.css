@@ -563,15 +563,23 @@ body {
 .map-card {
   padding: 0;
   overflow: hidden;
-  height: 600px;
+  height: auto;
   border-color: rgba(255, 255, 255, 0.1);
 }
 
 .map {
   width: 100%;
-  height: 100%;
-  filter: grayscale(0.2) contrast(1.1);
-  /* Slight mood for map */
+  height: 380px;
+}
+
+/* Leaflet 1.9 fix: set dark bg AND override tile blend mode.
+   filter on parent creates an isolated stacking context — mix-blend-mode:plus-lighter
+   inside it blends against transparent, not the dark bg, making tiles invisible. */
+.map.leaflet-container {
+  background: #1a1a2e !important;
+}
+.map.leaflet-container img.leaflet-tile {
+  mix-blend-mode: normal !important;
 }
 
 /* Results Section */
@@ -2129,7 +2137,7 @@ body { padding-top: 64px; }
 .itinerary-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 .itinerary-actions .btn-secondary { padding: 0.55rem 1.25rem; font-size: 0.85rem; }
 
-.itin-grid { display: grid; grid-template-columns: 1fr 380px; gap: 2rem; }
+.itin-grid { display: grid; grid-template-columns: 1fr 240px; gap: 2rem; }
 
 .empty-state {
   text-align: center;

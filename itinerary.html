@@ -54,33 +54,16 @@
       <!-- Tab panels + map grid -->
       <div class="itin-grid">
 
-        <!-- Left: tab content -->
+        <!-- Left: tab content (single area, swapped by JS) -->
         <div class="itin-main">
-          <div id="tab-itinerary" class="tab-panel">
-            <div id="itinerary-content" class="itinerary-content"></div>
-          </div>
-          <div id="tab-budget" class="tab-panel">
-            <div class="glass-card"><div id="budget-chart-container"></div></div>
-          </div>
-          <div id="tab-weather" class="tab-panel">
-            <div class="glass-card"><div id="weather-panel" class="weather-loading">
-              <div class="loading-ring small"></div>
-              <p>Fetching live weather…</p>
-            </div></div>
-          </div>
-          <div id="tab-packing" class="tab-panel">
-            <div class="glass-card"><div id="packing-content"></div></div>
-          </div>
-          <div id="tab-tips" class="tab-panel">
-            <div class="glass-card"><div id="tips-content"></div></div>
-          </div>
+          <div id="tab-content-area"></div>
         </div>
 
-        <!-- Right: map + budget summary -->
+        <!-- Right: budget summary -->
         <div class="itin-side">
-          <div class="glass-card map-card" style="position:sticky;top:80px">
-            <div id="map" class="map"></div>
-            <div id="budget-summary" class="budget-summary" style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--glass-border)"></div>
+          <div class="glass-card" style="position:sticky;top:80px;padding:1.25rem">
+            <p style="font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-accent);margin-bottom:0.75rem">💰 Budget Overview</p>
+            <div id="budget-summary"></div>
           </div>
         </div>
       </div>

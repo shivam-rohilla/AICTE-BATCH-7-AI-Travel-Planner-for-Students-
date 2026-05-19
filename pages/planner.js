@@ -53,6 +53,14 @@ document.getElementById('feeling-lucky')?.addEventListener('click', () => {
 
 // ── History ────────────────────────────────────────────────────────────────────
 
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+}
+
 function getHistory() {
   try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]') } catch { return [] }
 }
@@ -67,7 +75,7 @@ function renderHistoryInline() {
   }
   list.innerHTML = h.slice(0, 5).map(t => `
     <div class="hist-item" style="cursor:pointer" onclick="loadTrip(${t.id})">
-      <div class="hist-dest">${t.dest}</div>
+      <div class="hist-dest">${escHtml(t.dest)}</div>
       <div class="hist-meta">${t.days} days · ₹${(t.budget || 0).toLocaleString()}</div>
       <div class="hist-date">${new Date(t.at).toLocaleDateString()}</div>
     </div>
@@ -84,7 +92,7 @@ function renderHistoryPanel() {
   }
   list.innerHTML = h.map(t => `
     <div class="hist-item" style="cursor:pointer" onclick="loadTrip(${t.id})">
-      <div class="hist-dest">${t.dest}</div>
+      <div class="hist-dest">${escHtml(t.dest)}</div>
       <div class="hist-meta">${t.days} days · ₹${(t.budget || 0).toLocaleString()}</div>
       <div class="hist-date">${new Date(t.at).toLocaleDateString()}</div>
     </div>

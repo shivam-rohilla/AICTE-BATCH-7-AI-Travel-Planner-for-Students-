@@ -79,7 +79,6 @@ function updateDailyBudget() {
   const breakdown = document.getElementById('trip-budget-breakdown')
   if (breakdown) {
     breakdown.innerHTML = [
-      `<div class="budget-breakdown-item">7-day trip: <span>${fmt(total * 7)}</span></div>`,
       `<div class="budget-breakdown-item">${days}-day trip: <span>${fmt(total * days)}</span></div>`,
       `<div class="budget-breakdown-item">Per person (2): <span>${fmt(Math.ceil(total / 2))}</span></div>`,
       `<div class="budget-breakdown-item">Monthly budget: <span>${fmt(total * 30)}</span></div>`,

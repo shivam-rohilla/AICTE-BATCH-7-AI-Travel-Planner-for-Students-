@@ -1,6 +1,4 @@
 import { initShared, showToast } from '../shared.js'
-import L from 'leaflet'
-import 'leaflet/dist/leaflet.css'
 
 initShared()
 
@@ -19,6 +17,10 @@ const WEATHER_ICONS = {
   71:'🌨️', 73:'❄️', 75:'❄️', 80:'🌦️', 81:'🌧️', 82:'⛈️',
   95:'⛈️', 96:'⛈️', 99:'⛈️',
 }
+
+// Tab state — must be declared before renderPage() is called (avoids TDZ ReferenceError)
+let currentTab = 'itinerary'
+const tabContents = {}
 
 // ── Load Trip ──────────────────────────────────────────────────────────────────
 
@@ -39,21 +41,19 @@ if (!trip) {
 
 function renderPage(it) {
   document.title = `${it.destination} Itinerary — StudentTravelAI`
-
-  // Show container first so layout is computed before Leaflet measures #map
   document.getElementById('itin-content').style.display = 'block'
-  // Force synchronous layout reflow — after this, #map has real pixel dimensions
-  void document.getElementById('map').getBoundingClientRect()
 
   document.getElementById('itin-title').textContent = `${it.destination} — ${it.duration}-Day Itinerary`
   document.getElementById('itin-meta').innerHTML = [
     `<span class="itinerary-meta-pill">💰 ₹${(it.budget || it.totalBudget || 0).toLocaleString()}</span>`,
     `<span class="itinerary-meta-pill">📅 ${it.duration} days</span>`,
     it.accommodation ? `<span class="itinerary-meta-pill">🏨 ${it.accommodation}</span>` : '',
-    it.isDemo ? `<span class="itinerary-meta-pill" style="border-color:rgba(251,191,36,0.4);color:#fbbf24">⚡ Demo Mode</span>` : '<span class="itinerary-meta-pill" style="border-color:rgba(34,197,94,0.4);color:#22c55e">✓ AI Generated</span>',
+    it.isDemo
+      ? `<span class="itinerary-meta-pill" style="border-color:rgba(251,191,36,0.4);color:#fbbf24">⚡ Demo Mode</span>`
+      : `<span class="itinerary-meta-pill" style="border-color:rgba(34,197,94,0.4);color:#22c55e">✓ AI Generated</span>`,
   ].filter(Boolean).join('')
 
-  // Budget summary
+  // Budget summary (right column — always visible)
   const spent = it.days?.reduce((s, d) => s + (d.activities?.reduce((a, act) => a + (act.estimatedCost || 0), 0) || 0), 0) || 0
   const budget = it.budget || it.totalBudget || 0
   const remaining = budget - spent
@@ -68,126 +68,71 @@ function renderPage(it) {
     </div>
   `
 
-  // Itinerary timeline
-  document.getElementById('itinerary-content').innerHTML = it.days?.map(buildDayCard).join('') || '<p>No itinerary data.</p>'
+  // Build all tab content strings up front
+  try {
+    const days = (it.days?.map(buildDayCard) ?? []).join('')
+    tabContents.itinerary = `<div class="itinerary-content">${days || '<p style="color:var(--text-secondary);padding:1rem">No itinerary data.</p>'}</div>`
+  } catch (e) {
+    tabContents.itinerary = '<p style="color:var(--text-secondary);padding:1rem">Could not render itinerary.</p>'
+  }
 
-  // Budget chart
-  document.getElementById('budget-chart-container').innerHTML = buildBudgetChart(it.budgetBreakdown)
+  try {
+    tabContents.budget = `<div class="glass-card">${buildBudgetChart(it.budgetBreakdown)}</div>`
+  } catch (e) { tabContents.budget = '<p style="padding:1rem">Budget breakdown unavailable.</p>' }
 
-  // Packing list
-  document.getElementById('packing-content').innerHTML = buildPackingList(it.packingList)
+  tabContents.weather = `<div class="glass-card"><div class="weather-loading"><div class="loading-ring small"></div><p>Fetching live weather…</p></div></div>`
 
-  // Tips
-  document.getElementById('tips-content').innerHTML = buildTipsPanel(it)
+  try {
+    tabContents.packing = `<div class="glass-card">${buildPackingList(it.packingList)}</div>`
+  } catch (e) { tabContents.packing = '<p style="padding:1rem">Packing list unavailable.</p>' }
 
-  // Weather (non-blocking)
-  fetchWeather(it.destination, it.duration).then(w => renderWeather(w, it.duration))
+  try {
+    tabContents.tips = `<div class="glass-card">${buildTipsPanel(it)}</div>`
+  } catch (e) { tabContents.tips = '<p style="padding:1rem">Tips unavailable.</p>' }
 
-  // Demo banner
+  // Weather — async, updates the stored content and refreshes if tab is active
+  fetchWeather(it.destination, it.duration).then(w => {
+    tabContents.weather = `<div class="glass-card">${buildWeatherHtml(w, it.duration)}</div>`
+    if (currentTab === 'weather') switchTab('weather')
+  })
+
   if (it.isDemo) showDemoBanner()
-
-  // Tabs — CSS class approach, no inline styles
   initTabs()
-
-  // Map — display:block + getBoundingClientRect() above guarantees real dimensions
-  initMap(it.days)
 }
 
 // ── Tabs ───────────────────────────────────────────────────────────────────────
 
-const TAB_IDS = ['itinerary', 'budget', 'weather', 'packing', 'tips']
-
 function switchTab(name) {
-  TAB_IDS.forEach(id => {
-    const panel = document.getElementById('tab-' + id)
-    if (panel) panel.classList.toggle('tab-active', id === name)
-  })
+  currentTab = name
+  const area = document.getElementById('tab-content-area')
+  if (area) area.innerHTML = tabContents[name] ?? ''
   document.querySelectorAll('.tab-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.tab === name)
   })
 }
 
 function initTabs() {
-  // Direct listener on every button — no delegation
   document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', function () {
-      switchTab(this.dataset.tab)
-    })
+    btn.addEventListener('click', function () { switchTab(this.dataset.tab) })
   })
   switchTab('itinerary')
-}
-
-// ── Map ────────────────────────────────────────────────────────────────────────
-
-let map = null
-const geocache = new Map()
-
-function initMap(days) {
-  map = L.map('map', { zoomControl: true, attributionControl: true }).setView([20, 0], 2)
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    maxZoom: 19,
-    attribution: '© <a href="https://carto.com/">CARTO</a> · © <a href="https://openstreetmap.org">OSM</a>',
-  }).addTo(map)
-  // Invalidate after content becomes visible (visibility flip happens after this returns)
-  setTimeout(() => map.invalidateSize(), 50)
-
-  const markers = L.layerGroup().addTo(map)
-  const bounds = []
-
-  const plotAll = async () => {
-    for (const day of (days || [])) {
-      for (let i = 0; i < (day.activities?.length || 0); i++) {
-        const act = day.activities[i]
-        if (!act.location) continue
-        try {
-          const coords = await geocode(act.location)
-          if (!coords) continue
-          bounds.push([coords.lat, coords.lon])
-          const pin = L.divIcon({
-            className: '',
-            html: `<div class="map-pin">${ACTIVITY_ICONS[i % ACTIVITY_ICONS.length]}</div>`,
-            iconSize: [40, 40], iconAnchor: [20, 40], popupAnchor: [0, -44],
-          })
-          L.marker([coords.lat, coords.lon], { icon: pin })
-            .addTo(markers)
-            .bindPopup(`<div class="map-popup"><strong>${act.name}</strong><br><small>${act.description?.slice(0, 80)}…</small></div>`)
-        } catch { /* skip */ }
-      }
-    }
-    if (bounds.length) map.fitBounds(bounds, { padding: [30, 30], maxZoom: 14 })
-  }
-
-  plotAll()
-}
-
-async function geocode(name) {
-  if (geocache.has(name)) return geocache.get(name)
-  const res = await fetch(
-    `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(name)}&format=json&limit=1`,
-    { headers: { 'User-Agent': 'AI-Travel-Planner/2.0' } }
-  )
-  const data = await res.json()
-  if (!data.length) return null
-  const r = { lat: +data[0].lat, lon: +data[0].lon }
-  geocache.set(name, r)
-  return r
 }
 
 // ── Day cards ──────────────────────────────────────────────────────────────────
 
 function buildDayCard(day) {
   const dayTotal = day.activities?.reduce((s, a) => s + (a.estimatedCost || 0), 0) || 0
-  const acts = day.activities?.map((act, i) => `
+  const acts = (day.activities?.map((act, i) => `
     <li class="activity-item">
       <div class="activity-icon">${ACTIVITY_ICONS[i % ACTIVITY_ICONS.length]}</div>
       <div class="activity-details">
-        <div class="activity-name">${act.name}</div>
+        <div class="activity-name">${act.name || ''}</div>
         <div class="activity-time-row">
           ${act.time     ? `<span class="act-time">🕐 ${act.time}</span>` : ''}
           ${act.duration ? `<span class="act-dur">⏱ ${act.duration}</span>` : ''}
           ${act.category ? `<span class="act-cat">${act.category}</span>` : ''}
         </div>
-        <div class="activity-description">${act.description}</div>
+        <div class="activity-description">${act.description || ''}</div>
         ${act.tips     ? `<div class="activity-tip">💡 ${act.tips}</div>` : ''}
         ${act.location ? `<div class="activity-location">📍 ${act.location}</div>` : ''}
       </div>
@@ -195,7 +140,7 @@ function buildDayCard(day) {
         ${act.estimatedCost === 0 ? 'FREE' : '₹' + (act.estimatedCost || 0).toLocaleString()}
       </div>
     </li>
-  `).join('') || ''
+  `) ?? []).join('')
 
   return `
     <div class="day-card">
@@ -273,13 +218,8 @@ async function fetchWeather(destination, days) {
   } catch { return null }
 }
 
-function renderWeather(data, tripDays) {
-  const panel = document.getElementById('weather-panel')
-  if (!panel) return
-  if (!data) {
-    panel.innerHTML = '<p class="no-data">Weather forecast unavailable for this destination.</p>'
-    return
-  }
+function buildWeatherHtml(data, tripDays) {
+  if (!data) return '<p class="no-data">Weather forecast unavailable for this destination.</p>'
   const { daily, cityName, country } = data
   const count = Math.min(tripDays, daily.time.length)
   const cards = Array.from({ length: count }, (_, i) => {
@@ -299,8 +239,7 @@ function renderWeather(data, tripDays) {
       </div>
     `
   }).join('')
-
-  panel.innerHTML = `
+  return `
     <h3 class="tab-heading">Weather — ${cityName}, ${country}</h3>
     <p class="wx-note">Live ${count}-day forecast · <a href="https://open-meteo.com" target="_blank">Open-Meteo</a> · No API key</p>
     <div class="wx-cards">${cards}</div>

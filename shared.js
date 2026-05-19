@@ -159,7 +159,7 @@ function formatBotMessage(text) {
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
     .replace(/^- (.+)/gm, '<li>$1</li>')
-    .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+    .replace(/((?:<li>[^\n]*<\/li>\n?)+)/g, match => `<ul>${match}</ul>`)
     .replace(/\n\n/g, '<br><br>')
     .replace(/\n/g, '<br>')
 }
